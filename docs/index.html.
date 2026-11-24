@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATLAS BOTS</title>
+<style>
+:root{--bg:#06080f;--c:#0d1320;--c2:#141c2e;--ln:#1e2940;--fg:#eef2fb;--mu:#7d88a2;--g:#2ee88a;--r:#ff4d6a;--a:#7c6bff;--y:#f5b942;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef1f7;--c:#fff;--c2:#eef1f8;--ln:#d6dbe8;--fg:#141a28;--mu:#5a647c;--g:#0c9a52;--r:#d12c48;--a:#5b4bd6;--y:#a8741a;color-scheme:light}}
+:root[data-theme="light"]{--bg:#eef1f7;--c:#fff;--c2:#eef1f8;--ln:#d6dbe8;--fg:#141a28;--mu:#5a647c;--g:#0c9a52;--r:#d12c48;--a:#5b4bd6;--y:#a8741a;color-scheme:light}
+*{box-sizing:border-box}body{margin:0 auto;max-width:430px;background:var(--bg);color:var(--fg);font:13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:12px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.top b{font-size:17px;letter-spacing:2px}
+.tg{display:flex;gap:4px}.tg button{background:var(--c2);color:var(--mu);border:1px solid var(--ln);border-radius:20px;padding:5px 11px;font-size:11px;font-weight:700}.tg .on{background:var(--a);color:#fff;border-color:var(--a)}
+.card{background:linear-gradient(160deg,var(--c),var(--c2));border:1px solid var(--ln);border-radius:16px;padding:13px;margin-bottom:9px}
+.l{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.7px}.up{color:var(--g)}.dn{color:var(--r)}.w{color:var(--y)}
+.big{font-size:38px;font-weight:800;line-height:1.05;margin:2px 0}.mid{font-size:20px;font-weight:800}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.cell{background:var(--c2);border:1px solid var(--ln);border-radius:12px;padding:8px}
+.bar{height:7px;background:var(--ln);border-radius:7px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%;border-radius:7px}
+.row{display:flex;justify-content:space-between;align-items:baseline}
+svg{width:100%;display:block}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.cal div{border-radius:7px;padding:5px 0;text-align:center;font-size:10px;min-height:36px;border:1px solid var(--ln)}.cal b{display:block;font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:11px}td,th{padding:5px 2px;text-align:left;border-top:1px solid var(--ln)}th{color:var(--mu);font-weight:500;border:0;font-size:10px}
+.tag{border-radius:5px;padding:1px 5px;font-weight:800;font-size:10px}.tag.a{background:rgba(46,232,138,.18);color:var(--g)}.tag.s{background:rgba(255,77,106,.18);color:var(--r)}
+</style></head><body>
+<div class="top"><b>ATLAS BOTS</b><div class="tg"><button id="m1">Canlı</button><button id="m2" class="on">Geçmiş test</button></div></div>
+<div class="l" id="sub" style="margin-bottom:8px"></div>
+
+<div class="card"><div class="l" id="hl">Son 7 gün kâr</div><div class="big" id="hp">—</div>
+<div class="row"><span id="hs" class="l"></span><span id="hb" class="l"></span></div></div>
+
+<div class="card"><div class="l" style="margin-bottom:6px">Yarın için talimat (UTC 00:00 sonrası emir ver)</div><div id="ins" style="font-size:15px;font-weight:700">—</div></div>
+<div class="card"><div class="l" style="margin-bottom:6px">Para ve limitler</div>
+<div class="g3"><div class="cell"><div class="l">Bakiye</div><div class="mid" id="bk">—</div></div><div class="cell"><div class="l">Nakit</div><div class="mid" id="nk">—</div></div><div class="cell"><div class="l">BTC'de</div><div class="mid" id="bc">—</div></div></div>
+<div class="row" style="margin-top:10px"><span class="l">Günlük zarar limiti (-%10)</span><span class="l" id="l1t"></span></div><div class="bar"><i id="l1"></i></div>
+<div class="row"><span class="l">Toplam düşüş limiti (-%20)</span><span class="l" id="l2t"></span></div><div class="bar"><i id="l2"></i></div>
+<div class="row"><span class="l">BTC payı (en fazla %100)</span><span class="l" id="l3t"></span></div><div class="bar"><i id="l3" style="background:var(--a)"></i></div></div>
+
+<div class="card"><div class="l" style="margin-bottom:6px">Botlar</div><div class="g3" id="bots"></div></div>
+
+<div class="card"><div class="l">BTC fiyatı · ▲ alış ▼ satış</div><svg id="c1" viewBox="0 0 340 130"></svg></div>
+<div class="card"><div class="l">Kâr eğrisi (€)</div><svg id="c2" viewBox="0 0 340 90"></svg></div>
+<div class="card"><div class="l" style="margin-bottom:6px">Günlük takvim (son 35 gün)</div><div class="cal" id="cal"></div></div>
+<div class="card"><div class="l" style="margin-bottom:4px">İşlem tablosu</div><table><thead><tr><th>Gün</th><th>Bot</th><th>İşlem</th><th>Fiyat</th><th>Tutar €</th><th>Net €</th></tr></thead><tbody id="tb"></tbody></table></div>
+
+<div class="card"><div class="l">Veri otomatik gelir</div><div id="upd" class="l" style="color:var(--fg);margin-top:4px">Yükleniyor…</div></div>
+<div class="l">Sanal deney, finansal tavsiye değildir. Geçmiş test gelecek garantisi değildir. Veri her gün otomatik güncellenir.</div>
+<script>
+let P0=[],M0=[],DT=[],START="2026-11-19";
+const $=s=>document.querySelector(s),FEE=.0031,B0=50,NM=["Trend","Uzun Vade","Kırılım"];let mode=1;
+const f=(n,d=2)=>(n>=0?"+":"")+n.toFixed(d),eur=n=>n.toFixed(2)+" €",day=(s,i)=>{const t=new Date(s+"T00:00:00Z");t.setUTCDate(t.getUTCDate()+i);return t.toISOString().slice(0,10)};
+function run(P,T){const n=P.length,pos=T.map((_,i)=>i?T[i-1]:0),eq=[B0],tr=[],rd=[];let ent=null;
+for(let i=1;i<n;i++){const ret=P[i]/P[i-1]-1,to=Math.abs(pos[i]-pos[i-1]);eq.push(eq[i-1]*(1+pos[i]*ret-to*FEE));
+if(to>.01){const t={i,a:pos[i]>pos[i-1]?"AL":"SAT",amt:to*eq[i],net:null,from:pos[i-1],to:pos[i]};
+if(pos[i-1]==0&&pos[i]>0)ent=eq[i-1];
+if(pos[i]==0&&pos[i-1]>0&&ent!=null){t.net=eq[i]-ent;rd.push(t.net);ent=null}tr.push(t)}}
+return{eq,tr,rd,pos}}
+function series(){const V=a=>a.map(m=>[m&1,(m>>1)&1,(m>>2)&1]);
+if(mode==1){const j=DT.findIndex(d=>d>=START);if(j<0)return{P:[],V:[],dt:[],lbl:"CANLI SANAL DENEY"};const i=Math.max(0,j-1);return{P:P0.slice(i),V:V(M0.slice(i)),dt:DT.slice(i),lbl:"CANLI SANAL DENEY · BTC/EUR · "+START+"'den beri · 50 €"}}
+const s=Math.max(0,P0.length-150);return{P:P0.slice(s),V:V(M0.slice(s)),dt:DT.slice(s),lbl:"GEÇMİŞ TEST · son 150 gün · BTC/EUR · 50 € olsaydı"}}
+function render(){const S=series(),n=S.P.length;$("#m1").className=mode==1?"on":"";$("#m2").className=mode==2?"on":"";$("#sub").textContent=S.lbl;
+if(n<2){$("#hp").textContent="—";$("#hs").textContent=mode==1?"Canlı deney henüz başlamadı: ilk kapanan günün verisi bekleniyor.":"";["#bk","#nk","#bc"].forEach(x=>$(x).textContent="—");["#c1","#c2","#cal","#tb","#bots"].forEach(x=>$(x).innerHTML="");return}
+const T=S.V.map(v=>(v[0]+v[1]+v[2])/3),R=run(S.P,T),eq=R.eq,last=eq[n-1],pos=R.pos[n-1]||0,tn=T[n-1];
+const w7=last-eq[Math.max(0,n-8)],dp=eq.map((e,i)=>i?e-eq[i-1]:0),dd=[];let pk=0;eq.forEach(e=>{pk=Math.max(pk,e);dd.push(1-e/pk)});
+const wl=R.rd.filter(x=>x>0).length,ls=R.rd.length-wl;
+$("#hp").textContent=f(w7)+" €";$("#hp").className="big "+(w7>=0?"up":"dn");$("#hs").innerHTML=R.rd.length+" tamamlanan işlem · <span class='up'>"+wl+" kazanan</span> / <span class='dn'>"+ls+" kaybeden</span>";$("#hb").textContent="Toplam "+f(last-B0)+" €";
+$("#bk").textContent=eur(last);$("#nk").textContent=eur(last*(1-pos));$("#bc").textContent=eur(last*pos);
+const dl=tn-pos,am=Math.abs(dl)*last;$("#ins").innerHTML=Math.abs(dl)<.01?"Hiçbir şey yapma. BTC payı %"+Math.round(pos*100)+" kalsın.":'<span class="tag '+(dl>0?"a":"s")+'">'+(dl>0?"AL":"SAT")+"</span> "+am.toFixed(1)+" € değerinde BTC · pay %"+Math.round(pos*100)+" → %"+Math.round(tn*100)+(am<5?'<div class="l w" style="margin-top:4px">Tutar Kraken\'in 5 € alt sınırının altında, bir sonraki değişime ertele.</div>':"");
+const d1=Math.max(0,-dp[n-1])/(.10*eq[n-2]),d2=dd[n-1]/.20;
+const bar=(id,v,t,c)=>{$(id).style.width=Math.min(100,v*100)+"%";$(id).style.background=c||(v>.7?"var(--r)":v>.4?"var(--y)":"var(--g)");$(id+"t").textContent=t};
+bar("#l1",d1,"bugün "+f(dp[n-1])+" € · kullanılan %"+Math.round(d1*100));bar("#l2",d2,"düşüş %"+(dd[n-1]*100).toFixed(1)+" · kullanılan %"+Math.round(Math.min(1,d2)*100));
+$("#l3").style.width=pos*100+"%";$("#l3t").textContent="şu an %"+Math.round(pos*100)+" (yarın hedef %"+Math.round(tn*100)+")";
+$("#bots").innerHTML=NM.map((nm,j)=>{const t=S.V.map(v=>v[j]),r=run(S.P,t),w=r.rd.filter(x=>x>0).length,v=t[n-1];return'<div class="cell"><div class="l">'+nm+'</div><div class="mid '+(v?"up":"w")+'" style="font-size:15px">'+(v?"AL":"BEKLE")+'</div><div class="l" style="margin-top:4px">'+f(r.eq[n-1]-B0,1)+' € · '+r.rd.length+' işlem'+(r.rd.length?' · %'+Math.round(w/r.rd.length*100)+' kazanç':'')+'</div></div>'}).join("");
+const mn=Math.min(...S.P),mx=Math.max(...S.P),sx=i=>i/(n-1)*336+2,sy=v=>120-(v-mn)/(mx-mn||1)*108;
+let g='<polyline fill="none" stroke="var(--mu)" stroke-width="2" stroke-linejoin="round" points="'+S.P.map((p,i)=>sx(i)+","+sy(p)).join(" ")+'"/>';
+R.tr.forEach(t=>{const x=sx(t.i),y=sy(S.P[t.i]);g+=t.a=="AL"?'<path d="M'+x+" "+(y+3)+'l-5 9h10z" fill="var(--g)"/>':'<path d="M'+x+" "+(y-3)+'l-5 -9h10z" fill="var(--r)"/>'});$("#c1").innerHTML=g;
+const em=Math.min(...eq),ex=Math.max(...eq),ey=v=>80-(v-em)/(ex-em||1)*70;
+$("#c2").innerHTML='<line x1="0" x2="340" y1="'+ey(B0)+'" y2="'+ey(B0)+'" stroke="var(--ln)" stroke-dasharray="4"/><polyline fill="none" stroke="'+(last>=B0?"var(--g)":"var(--r)")+'" stroke-width="2.5" stroke-linejoin="round" points="'+eq.map((e,i)=>sx(i)+","+ey(e)).join(" ")+'"/>';
+const c=dp.slice(-35),cd=S.dt.slice(-35),mxa=Math.max(.01,...c.map(Math.abs));
+$("#cal").innerHTML=c.map((v,i)=>{const a=.15+.6*Math.abs(v)/mxa,col=v>0.005?"46,232,138":v<-0.005?"255,77,106":"125,136,162";return'<div style="background:rgba('+col+','+(Math.abs(v)<.005?.12:a)+')"><span class="l">'+cd[i].slice(8)+'</span><b>'+(Math.abs(v)<.005?"·":f(v,1))+'</b></div>'}).join("");
+const rows=R.tr.slice(-12).reverse();$("#tb").innerHTML=rows.length?rows.map(t=>{const nn=S.V[t.i].reduce((a,b)=>a+b,0);return"<tr><td>"+S.dt[t.i].slice(5)+"</td><td>"+nn+"/3 oy</td><td><span class='tag "+(t.a=="AL"?"a":"s")+"'>"+t.a+"</span></td><td>"+(S.P[t.i]/1000).toFixed(1)+"K</td><td>"+t.amt.toFixed(1)+"</td><td class='"+(t.net==null?"":t.net>=0?"up":"dn")+"'>"+(t.net==null?"–":f(t.net,2))+"</td></tr>"}).join(""):'<tr><td colspan="6" class="l">Henüz işlem yok (botlar nakitte bekliyor)</td></tr>'}
+$("#m1").onclick=()=>{mode=1;render()};$("#m2").onclick=()=>{mode=2;render()};
+fetch("data.json?"+Date.now()).then(r=>r.json()).then(j=>{P0=j.p;M0=j.m;DT=j.d;START=j.start;$("#upd").textContent="Son güncelleme: "+j.updated.slice(0,16).replace("T"," ")+" UTC · son kapanan gün "+j.d[j.d.length-1];render()}).catch(()=>{$("#upd").textContent="data.json okunamadı. GitHub Actions bir kez çalıştı mı?";render()});
+</script></body></html>
